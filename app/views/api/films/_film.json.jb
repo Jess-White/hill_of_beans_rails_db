@@ -1,0 +1,7 @@
+{
+    id: film.id,
+    title: film.title,
+    imdb_number: film.imdb_number,
+    thumbs_up: film.thumbs_up,
+    thumbs_down: film.thumbs_down 
+  }
