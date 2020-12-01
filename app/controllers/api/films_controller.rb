@@ -1,5 +1,30 @@
 class Api::FilmsController < ApplicationController
 
+    def search
+      title = params[:title]
+      movies = HTTParty.get("https://movie-database-imdb-alternative.p.rapidapi.com?s=#{title}&page=1&r=json", {
+        headers: {
+          'x-rapidapi-key' => 'e979f7406cmsh363d1f98423c118p197d7bjsnce1e962638fd',
+          'x-rapidapi-host' => 'movie-database-imdb-alternative.p.rapidapi.com'
+        }
+      })
+      @films = Film.all
+      movies["Search"].each do |movie| 
+        movie['thumbs_up'] = 0
+        movie['thumbs_down'] = 0
+        movie['db_id'] = nil
+        @films.each do |film|
+          if film.imdb_number == movie['imdbID']
+            movie['thumbs_up'] = film.thumbs_up
+            movie['thumbs_down'] = film.thumbs_down
+            movie['db_id'] = film.id
+          end 
+        end 
+      end 
+        puts movies
+        render json: movies['Search']
+    end 
+
     def index
       @films = Film.all
       @films = @films.order(id: :desc)
@@ -10,9 +35,14 @@ class Api::FilmsController < ApplicationController
       @film = Film.new(
         title: params[:title],
         imdb_number: params[:imdb_number],
-        thumbs_up: params[:thumbs_up],
-        thumbs_down: params[:thumbs_down]
+        thumbs_up: 0,
+        thumbs_down: 0
       )
+      if params[:action] == "thumbs_up"
+        @film.thumbs_up += 1
+      else
+        @film.thumbs_down += 1
+      end 
       if @film.save
         render "show.json.jb"
       else
@@ -26,11 +56,20 @@ class Api::FilmsController < ApplicationController
     end
 
     def update
-      @film = Film.find(params[:id])
-      @film.title = params[:title] || @film.title
-      @film.imdb_number = params[:imdb_number] || @film.imdb_number
-      @film.thumbs_up = params[:thumbs_up] || @film.thumbs_up
-      @film.thumbs_down = params[:thumbs_down] || @film.thumbs_down
+      @film = Film.find_by(imdb_number: params[:imdb])
+      unless @film 
+        @film = Film.new(
+          title: params[:title],
+          imdb_number: params[:imdb_number],
+          thumbs_up: 0,
+          thumbs_down: 0
+        )
+      end
+      if params[:action] == "thumbs_up"
+        @film.thumbs_up += 1
+      else 
+        @film.thumbs_down += 1
+      end 
       if @film.save
         render "show.json.jb"
       else
