@@ -40,7 +40,7 @@ class Api::FilmsController < ApplicationController
       )
       if params[:action] == "thumbs_up"
         @film.thumbs_up += 1
-      else
+      elsif params[:action] == "thumbs_down"
         @film.thumbs_down += 1
       end 
       if @film.save
