@@ -9,7 +9,7 @@ class Api::FilmsController < ApplicationController
         }
       })
       @films = Film.all
-      movies["Search"].each do |movie| 
+      movies['Search'].each do |movie| 
         movie['thumbs_up'] = 0
         movie['thumbs_down'] = 0
         movie['db_id'] = nil
@@ -38,9 +38,9 @@ class Api::FilmsController < ApplicationController
         thumbs_up: 0,
         thumbs_down: 0
       )
-      if params[:action] == "thumbs_up"
+      if params[:rating] == "thumbs_up"
         @film.thumbs_up += 1
-      elsif params[:action] == "thumbs_down"
+      elsif params[:rating] == "thumbs_down"
         @film.thumbs_down += 1
       end 
       if @film.save
@@ -56,7 +56,7 @@ class Api::FilmsController < ApplicationController
     end
 
     def update
-      @film = Film.find_by(imdb_number: params[:imdb])
+      @film = Film.find_by(imdb_number: params[:imdb_number])
       unless @film 
         @film = Film.new(
           title: params[:title],
@@ -65,9 +65,9 @@ class Api::FilmsController < ApplicationController
           thumbs_down: 0
         )
       end
-      if params[:action] == "thumbs_up"
+      if params[:rating] == "thumbs_up"
         @film.thumbs_up += 1
-      elsif params[:action] == "thumbs_down"
+      elsif params[:rating] == "thumbs_down"
         @film.thumbs_down += 1
       end 
       if @film.save
