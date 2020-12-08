@@ -8,6 +8,6 @@ Rails.application.routes.draw do
 
     patch "/films/:imdb" => "films#update"
 
-    get "/films/:id" => "films#show"
+    get "/films/:imdb" => "films#show"
   end
 end
