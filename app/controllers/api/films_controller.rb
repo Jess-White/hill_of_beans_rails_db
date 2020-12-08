@@ -1,4 +1,4 @@
-class Api::FilmsController < ApplicationController
+class Api::FilmsController < ApplicationController 
 
     def search
       title = params[:title]
@@ -51,9 +51,16 @@ class Api::FilmsController < ApplicationController
     end
 
     def show
-      @film = Film.find(params[:id])
-      render "show.json.jb"
+      added_info = HTTParty.get("https://movie-database-imdb-alternative.p.rapidapi.com?i=#{params[:imdb]}&r=json", {
+        headers: {
+        'x-rapidapi-key' => 'e979f7406cmsh363d1f98423c118p197d7bjsnce1e962638fd',
+        'x-rapidapi-host' => 'movie-database-imdb-alternative.p.rapidapi.com'
+        }
+      })
+      puts added_info
+      render json: added_info
     end
+   
 
     def update
       @film = Film.find_by(imdb_number: params[:imdb_number])
